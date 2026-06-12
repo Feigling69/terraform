@@ -1,9 +1,9 @@
-resource "proxmox_virtual_environment_vm" "testvm" {
+resource "proxmox_virtual_environment_vm" "new" {
   name      = var.vmname
-  node_name = "proxmox"
+  node_name = var.node_name
 
   clone {
-    vm_id = var.vm_id
+    vm_id = var.template_id
   }
 
   cpu {
@@ -16,11 +16,13 @@ resource "proxmox_virtual_environment_vm" "testvm" {
     dedicated = var.memory
   }
   
-  
+  # disk:
+  # das interface muss das gleiche device wie im template sein, sonst wird eine zusätzliche hdd erzeugt
+  # ausserdem kann die hdd nicht kleiner sein, als im template
   disk {
     datastore_id = "local-lvm" 
-    interface    = "scsi0"
-    size         = 20
+    interface    = "virtio0"
+    size         = var.disksize
     discard      = "on"
   }
 
@@ -30,16 +32,18 @@ resource "proxmox_virtual_environment_vm" "testvm" {
   }
 
   initialization {
+    user_data_file_id = proxmox_virtual_environment_file.cloudinit.id
+
     ip_config {
       ipv4 {
-        address = "dhcp"
+        address = var.ipv4_address # alternativ address = "dhcp"
+        gateway = var.ipv4_gateway
       }
     }
 
-    user_account {
-      username = var.username
-      password = var.password
-      keys = [ var.sshkeys ]
+    dns {
+      servers = var.dns_server
+      domain  = var.dns_domain
     }
   }
   
@@ -50,7 +54,5 @@ resource "proxmox_virtual_environment_vm" "testvm" {
   vga {
     type   = "serial0"      # Erzwinge Serial Console als primäre Konsole
     memory = 16             # Optional: VRAM für die Konsole
-  }
-
-  
+  } 
 }

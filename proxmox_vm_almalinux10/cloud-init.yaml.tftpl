@@ -1,0 +1,31 @@
+#cloud-config
+
+users:
+  - name: ansible
+    gecos: Ansible User
+    groups: wheel
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    ssh_authorized_keys:
+      - ${ansible_key}
+    lock_passwd: true
+
+  - name: ${adminuser}
+    gecos: Admin User
+    groups: wheel
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    ssh_authorized_keys:
+      - ${adminuser_key}
+    passwd: ${adminuser_password_hash}
+    lock_passwd: false
+
+ssh_pwauth: true
+package_update: true
+package_upgrade: true
+packages:
+  - python3
+
+hostname: ${hostname}
+fqdn: ${hostname}
+manage_etc_hosts: true

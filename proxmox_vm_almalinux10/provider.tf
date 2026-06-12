@@ -8,18 +8,14 @@ terraform {
   }
 }
 
-variable "endpoint" {
-  type = string
-}
-
-variable "api_token" {
-  type = string
-  sensitive = true
-}
-
-
 provider "proxmox" {
   endpoint  = var.endpoint
   api_token = var.api_token
   insecure  = true
+
+  # für den cloudinit ist ssh-zugang mit root und geladenem ssh-key nötig
+  ssh {
+    username    = "root"
+    agent = true
+  }
 }
