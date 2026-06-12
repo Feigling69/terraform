@@ -10,4 +10,4 @@ erzeugt eine neue almalinux 10 VM
 - installiert python3
 - setzt statische IP und dns
 - adminuser bekommt ein passwort (für die console)
-
+- ein dnf update wird ausgeführt
